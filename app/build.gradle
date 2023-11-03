@@ -1,0 +1,98 @@
+plugins {
+    id 'com.android.application'
+    id 'org.greenrobot.greendao'
+    id 'org.jetbrains.kotlin.android'// apply plugin
+}
+
+def releaseTime() { return new Date().format("yyyy-MM-dd", TimeZone.getTimeZone("UTC")) }
+android {
+    compileSdk 31
+
+    defaultConfig {
+        applicationId "com.example.chatlxt"
+        minSdk 30
+        targetSdk 31
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        applicationVariants.all { variant ->
+            variant.outputs.each { output ->
+                def oldFile = output.outputFile
+                def newName = 'ChatLXT'
+                if (variant.buildType.name == 'release') {
+                    def releaseApkName = newName + "-" + defaultConfig.versionName + "-" + releaseTime() + ".apk"
+                    output.outputFileName = new File(oldFile.parent, releaseApkName).name
+                }
+                if (variant.buildType.name == 'debug') {
+                    def debugApkName = newName + "-${defaultConfig.versionName}-${releaseTime()}-debug.apk"
+                    output.outputFileName = new File(oldFile.parent, debugApkName).name
+                }
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+    viewBinding {
+        enabled = true
+    }
+}
+
+dependencies {
+
+    implementation 'androidx.appcompat:appcompat:1.3.0'
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
+    // kotlin 快速开发
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.1.1"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.1"
+    // Google Jetpack 组件
+    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.2.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata:2.4.0'
+    implementation "androidx.activity:activity-ktx:1.3.1"
+    // 图片加载工具
+    implementation 'com.github.bumptech.glide:glide:4.12.0'
+    // greenDAO 数据库
+    implementation 'org.greenrobot:greendao:3.3.0'
+    // okhttp库(如果使用在线初始化需要引入,离线不用)
+    implementation 'com.squareup.okhttp3:okhttp:3.14.9'
+    // okio库(如果使用在线初始化需要引入,离线不用)
+    implementation "com.squareup.okio:okio:2.4.0"
+    // Retrofit2
+    implementation 'com.squareup.retrofit2:retrofit:2.0.0-beta4'
+    implementation 'com.squareup.retrofit2:converter-gson:2.0.0-beta4'//ConverterFactory的Gson依赖包
+    implementation 'com.squareup.retrofit2:converter-scalars:2.0.0-beta4'//ConverterFactory的String
+    implementation 'com.squareup.retrofit2:retrofit:2.5.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.5.0'
+    implementation "com.squareup.okhttp3:logging-interceptor:3.12.1"
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
+    implementation "io.reactivex.rxjava2:rxjava:2.2.5"
+}
+
+// 数据库配置参数
+greendao {
+    schemaVersion 1  // 指定数据库schema版本号，迁移等操作会用到;
+    daoPackage 'com.example.chatlxt.Dao'  // 指定生成数据库文件的dao包名（不需要先创建）
+    targetGenDir 'src/main/java'//生成数据库文件的目录;
+}
