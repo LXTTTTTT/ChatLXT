@@ -19,22 +19,20 @@ import android.os.Looper;
 import android.os.Vibrator;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.PopupWindow;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.PopupMenu;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.chatlxt.R;
+import com.example.chatlxt.View.CustomDialog;
 import com.example.chatlxt.ViewModel.DataViewModel;
 import com.example.chatlxt.Global.Variable;
 import com.example.chatlxt.HTTP.GPTInterface;
@@ -61,6 +59,7 @@ public class MainApplication extends Application {
 // Control --------------------------------
     private AlertDialog alertDialog;  // 自定义图像的系统警告框 AlertDialog
     public PopupWindow popupWindow;  // 长按后弹出来的弹窗
+    private CustomDialog customDialog;  // 角色扮演弹窗
 
 // ViewModel ------------------------------
 //    public TextViewModel textViewModel;
@@ -74,7 +73,7 @@ public class MainApplication extends Application {
     public ExecutorService threadPool;  // 线程池
     public GPTInterface gptInterface;  // gpt请求工具
     public LayoutInflater layoutInflater;  // 布局填充器
-
+    public InputMethodManager inputMethodManager;  // 软键盘管理
 
 // Instance -------------------------
     private static MainApplication mainApplication;
@@ -124,6 +123,7 @@ public class MainApplication extends Application {
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 
         layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -153,23 +153,25 @@ public class MainApplication extends Application {
     }
 
 
-    public void showPopupMenu(View view){
+    public void showPopupMenu(View view, View.OnClickListener... onClickListeners){
         popupWindow = null;
         View customView = layoutInflater.inflate(R.layout.layout_popupmenu, null);
-        customView.findViewById(R.id.clean).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.e(TAG, "onClick: menuItemText" );
-                if(popupWindow!=null){popupWindow.dismiss();}
-            }
-        });
+        if(onClickListeners.length>0 && onClickListeners[0]!=null){customView.findViewById(R.id.clean).setOnClickListener(onClickListeners[0]);}
+        if(onClickListeners.length>1 && onClickListeners[1]!=null){customView.findViewById(R.id.change).setOnClickListener(onClickListeners[1]);}
+        if(onClickListeners.length>2 && onClickListeners[2]!=null){customView.findViewById(R.id.other).setOnClickListener(onClickListeners[2]);}
+
         popupWindow = new PopupWindow(customView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
         popupWindow.setAnimationStyle(R.style.PopupMenuAnimation);
         popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 //        popupWindow.showAtLocation(view, Gravity.START | Gravity.TOP, 0, 0);  // 相对于整个页面显示
+        // 关闭软键盘
+        hideKeyboard();
         popupWindow.showAsDropDown(view,0,0);
     }
 
+    public void hidePopupMenu(){
+        if(popupWindow!=null){popupWindow.dismiss();}
+    }
 
     public void showSnackBar(View view,String msg,int length){
         now_activity.runOnUiThread(new Runnable() {
@@ -223,6 +225,35 @@ public class MainApplication extends Application {
     public void hideAlertDialog() {
         if (alertDialog != null) {
             alertDialog.dismiss();
+        }
+    }
+
+    // 全局唯一 展示 自定义 dialog 方法： target_activity 留空 - 显示在当前 activity，列表用到的数据，保存列表拿到的数据
+    public void showCustomDialog(Activity target_activity, CustomDialog.OnDialogWork onDialogWork) {
+        if (customDialog == null) {
+            customDialog = new CustomDialog();
+        }
+        Log.e(TAG, "弹出 CustomDialog");
+        if (customDialog.isAdded()) return;
+        customDialog.setOnDialogWork(onDialogWork);
+        if(target_activity != null){
+            customDialog.show(target_activity.getFragmentManager(), "");
+        }else {
+            customDialog.show(now_activity.getFragmentManager(), "");
+        }
+    }
+    // 隐藏 警告 dialog 方法
+    public void hideCustomDialog() {
+        if (customDialog != null) {
+            customDialog.dismiss();
+        }
+    }
+
+    // 隐藏键盘
+    public void hideKeyboard(){
+        if (now_activity.window.getAttributes().softInputMode != WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN) {
+            if (now_activity.getCurrentFocus() != null)
+                inputMethodManager.hideSoftInputFromWindow(now_activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
     }
 

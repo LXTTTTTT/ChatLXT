@@ -26,9 +26,9 @@ object RetrofitUtil {
         loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY  // 定义打印的数据是请求体
 
         builder!!.addInterceptor(loggingInterceptor)
-            .connectTimeout(10, TimeUnit.SECONDS)  // 设置连接超时
-            .readTimeout(10, TimeUnit.SECONDS)  // 设置读取超时
-            .writeTimeout(10, TimeUnit.SECONDS)  // 设置写入超时
+            .connectTimeout(30, TimeUnit.SECONDS)  // 设置连接超时
+            .readTimeout(30, TimeUnit.SECONDS)  // 设置读取超时
+            .writeTimeout(30, TimeUnit.SECONDS)  // 设置写入超时
     }
 
     // 请求默认的 url

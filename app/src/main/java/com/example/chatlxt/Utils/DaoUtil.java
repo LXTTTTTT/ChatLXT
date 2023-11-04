@@ -87,6 +87,9 @@ public class DaoUtil {
     public static QueryBuilder getMessageBuilder(){
         return getInstance().getDaoSession().getMessageDao().queryBuilder();
     }
+    public static QueryBuilder getChatBuilder(){
+        return getInstance().getDaoSession().getChatDao().queryBuilder();
+    }
 
 // 关闭数据库：关闭所有的操作，数据库开启后，使用完毕要关闭 ---------
     public void closeConnection() {

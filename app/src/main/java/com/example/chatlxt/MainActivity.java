@@ -1,12 +1,15 @@
 package com.example.chatlxt;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.WindowManager;
 
 import com.example.chatlxt.Base.BaseActivity;
+import com.example.chatlxt.Fragment.KeepSessionFragment;
 import com.example.chatlxt.Fragment.SingleSessionFragment;
 import com.example.chatlxt.View.BottomBar;
 import com.example.chatlxt.databinding.ActivityMainBinding;
@@ -16,6 +19,7 @@ public class MainActivity extends BaseActivity {
 
     ActivityMainBinding viewBinding;
     SingleSessionFragment singleSessionFragment;
+    KeepSessionFragment keepSessionFragment;
 
     @Override
     protected Object setLayout() {
@@ -31,13 +35,21 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void initView(Bundle savedInstanceState) {
         singleSessionFragment = new SingleSessionFragment();
+        keepSessionFragment = new KeepSessionFragment();
         viewBinding.bottomBar.setContainer(R.id.fragment)  // 设置容器控件
                 .setOrientation(BottomBar.HORIZONTAL)  // 设置方向
                 .setFirstChecked(0)  // 设置首选项
                 .setTitleBeforeAndAfterColor("#7f7f7f", "#00BFFF")  // 设置标题选中和未选中的颜色
                 .addItem(singleSessionFragment,"单次会话",R.mipmap.single_icon1, R.mipmap.single_icon2)  // 添加页面: fragment对象,标题名称,选中前图标,选中后图标
-                .addItem(singleSessionFragment,"持续会话",R.mipmap.keep_icon1, R.mipmap.keep_icon2)  // 添加页面
+                .addItem(keepSessionFragment,"持续会话",R.mipmap.keep_icon1, R.mipmap.keep_icon2)  // 添加页面
                 .buildWithEntity();  // 构建
+
+        viewBinding.bottomBar.setOnSwitchListener(new BottomBar.OnSwitchListener() {
+            @Override
+            public void result(@Nullable Fragment currentFragment) {
+                application.hideKeyboard();
+            }
+        });
     }
 
     @Override

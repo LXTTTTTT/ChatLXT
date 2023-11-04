@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:paddingRight="5dp"
     android:orientation="vertical"
     android:gravity="center">
 
@@ -12,9 +13,9 @@
         android:layout_marginBottom="-1dp"
         android:background="@color/transparent">
         <ImageView
-            android:layout_width="20dp"
-            android:layout_height="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_width="25dp"
+            android:layout_height="15dp"
+            android:layout_marginRight="20dp"
             android:scaleType="fitXY"
             android:src="@mipmap/popupmenu_arrow"/>
     </LinearLayout>
@@ -24,7 +25,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center"
-        android:background="@drawable/corner_fill_gray_2">
+        android:background="@drawable/corner_fill_gray_3">
 
         <LinearLayout
             android:id="@+id/clean"
@@ -49,6 +50,13 @@
                 android:layout_gravity="center_vertical"/>
         </LinearLayout>
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.7dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:background="@color/gray_1"/>
+
         <LinearLayout
             android:id="@+id/change"
             android:layout_width="wrap_content"
@@ -66,13 +74,21 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="改变角色"
+                android:text="角色扮演"
                 android:textSize="18dp"
                 android:textColor="@color/gray_1"
                 android:layout_gravity="center_vertical"/>
         </LinearLayout>
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.7dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:background="@color/gray_1"/>
+
         <LinearLayout
+            android:id="@+id/other"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -90,7 +106,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="18dp"
                 android:textColor="@color/gray_1"
-                android:text="清除记录"
+                android:text="设置KEY"
                 android:layout_gravity="center_vertical"/>
         </LinearLayout>
 

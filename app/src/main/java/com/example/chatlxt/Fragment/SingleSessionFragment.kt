@@ -1,6 +1,7 @@
 package com.example.chatlxt.Fragment
 
 import android.view.View
+import android.view.View.OnClickListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.chatlxt.Adapter.SingleMessageAdapter
 import com.example.chatlxt.Base.BaseFragment
@@ -11,6 +12,8 @@ import com.example.chatlxt.Global.Variable
 import com.example.chatlxt.Utils.DaoUtil
 import com.example.chatlxt.Utils.NotificationCenter
 import com.example.chatlxt.Utils.RequestUtil
+import com.example.chatlxt.View.CustomDialog
+import com.example.chatlxt.View.CustomDialog.OnDialogWork
 import com.example.chatlxt.databinding.FragmentSingleBinding
 
 class SingleSessionFragment: BaseFragment(),NotificationCenter.NotificationCenterDelegate {
@@ -19,6 +22,7 @@ class SingleSessionFragment: BaseFragment(),NotificationCenter.NotificationCente
     var messageList:MutableList<Message> = arrayListOf()
     lateinit var adapter:SingleMessageAdapter
     lateinit var msg:com.example.chatlxt.Entity.GsonBean.Receiving.Message  // 最后一条消息内容
+    var character:String = ""  // 需要扮演的角色
     override fun beforeSetLayout() {}
     override fun getTAG(): String { return "SingleSessionFragment"; }
 
@@ -95,7 +99,32 @@ class SingleSessionFragment: BaseFragment(),NotificationCenter.NotificationCente
         // 更多
         more.setOnClickListener(object :View.OnClickListener{
             override fun onClick(p0: View?) {
-                application.showPopupMenu(p0)
+                application.showPopupMenu(p0,object :OnClickListener{
+                    override fun onClick(p0: View?) {
+                        // 清除记录
+                        application.hidePopupMenu()
+                        DaoUtil.getMessageBuilder().where(MessageDao.Properties.Belong.eq(0)).buildDelete().executeDeleteWithoutDetachingEntities()  // 删除数据
+                        messageList.clear()
+                        adapter.update(messageList)  // 清空列表
+                    }
+                },object :OnClickListener{
+                    override fun onClick(p0: View?) {
+                        // 角色扮演
+                        application.hidePopupMenu()
+                        application.showCustomDialog(activity,object : CustomDialog.OnDialogWork{
+                            override fun onChoice(title: String?, character: String?) {
+                                loge("$title : ${character?.length}")
+                                title?.let { setTitle(it) }
+                                character?.let { this@SingleSessionFragment.character = it }
+                                application.hideCustomDialog()
+                            }
+                        })
+                    }
+                },object :OnClickListener{
+                    override fun onClick(p0: View?) {
+                        application.hidePopupMenu()
+                    }
+                })
             }
         })
         // 发送
@@ -121,7 +150,8 @@ class SingleSessionFragment: BaseFragment(),NotificationCenter.NotificationCente
 
     fun askQuestion(question:String){
         // 发送请求
-        msg = com.example.chatlxt.Entity.GsonBean.Receiving.Message(Constant.GPT_USER,question)
+        val character_question = character + question
+        msg = com.example.chatlxt.Entity.GsonBean.Receiving.Message(Constant.GPT_USER,character_question)
         var msgs = arrayListOf<com.example.chatlxt.Entity.GsonBean.Receiving.Message>()
         msgs.add(msg)
         RequestUtil.getInstance().chat(msgs)

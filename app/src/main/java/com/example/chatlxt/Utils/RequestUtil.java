@@ -91,7 +91,7 @@ public class RequestUtil {
                         @Override
                         public void onError(Throwable e) {
 //                            Log.e(TAG, "onError: ");
-                            MainApplication.getInstance().showToast("聊天失败，网络错误",0);
+                            MainApplication.getInstance().showToast("你梯子挂了?",0);
                             result.status = Constant.MESSAGE_FAIL;
                             DaoUtil.getInstance().getDaoSession().update(result);
                             NotificationCenter.standard().postNotification(Constant.RECEIVE_MESSAGE);
