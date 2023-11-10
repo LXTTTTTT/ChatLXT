@@ -21,7 +21,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@color/gray_2"
-            android:nestedScrollingEnabled="false"/>
+            android:nestedScrollingEnabled="false"
+            android:layout_gravity="top"/>
     </LinearLayout>
 
 
@@ -48,6 +49,7 @@
             android:maxLines="3"
             android:gravity="top|start"
             android:scrollbars="vertical"/>
+
         <TextView
             android:id="@+id/send"
             android:layout_width="50dp"

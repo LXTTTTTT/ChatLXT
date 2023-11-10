@@ -35,13 +35,22 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:isScrollContainer="true">
-        <androidx.recyclerview.widget.RecyclerView
+        <com.example.chatlxt.View.SlideRecyclerView
             android:id="@+id/chat_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@color/gray_2"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
             android:nestedScrollingEnabled="false"/>
+<!--        <androidx.recyclerview.widget.RecyclerView-->
+<!--            android:id="@+id/chat_list"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:layout_weight="1"-->
+<!--            android:background="@color/gray_2"-->
+<!--            android:nestedScrollingEnabled="false"/>-->
     </LinearLayout>
 
 

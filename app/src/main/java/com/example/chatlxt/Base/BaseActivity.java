@@ -39,8 +39,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     public String TAG = getClass().getName();
     public Window window;
 
-    ImageView back;
-    TextView title;
+    public ImageView back;
+    public TextView title;
+    public ImageView more;
+    public ImageView delete;
     public Context my_context;
     public MainApplication application;
 
@@ -65,18 +67,21 @@ public abstract class BaseActivity extends AppCompatActivity {
 //        setOrientationPortrait();  // 锁定垂直方向
 
         // 设置返回按键的事件，放在初始化控件之前，防止某些页面要重写返回键的事件
-//        try {
-//            title = findViewById(R.id.title);
-//            back = findViewById(R.id.back);
-//            back.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    finish();
-//                }
-//            });
-//        }catch (Exception e){
-//            loge("这个页面没有 back 按键");
-//        }
+        try {
+            title = findViewById(R.id.title);
+            back = findViewById(R.id.back);
+            more = findViewById(R.id.more);
+            delete = findViewById(R.id.delete);
+            back.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    finish();
+                }
+            });
+            delete.setVisibility(View.GONE);
+        }catch (Exception e){
+            loge("这个页面没有 back 按键");
+        }
         initView(savedInstanceState);  // 初始化控件
         initData();  // 初始化数据
     }
@@ -178,29 +183,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     }
 
-
-
-// 显示键盘
-    public void showKeyboard(final View view) {
-        view.postDelayed(() -> {
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            if (null != imm) {
-                view.requestFocus();
-                imm.showSoftInput(view, 0);
-            }
-        }, 100);
-    }
-
-
-// 隐藏键盘
-    public void hideKeyboard() {
-        InputMethodManager mInputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-        if (getWindow().getAttributes().softInputMode != WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN) {
-            if (getCurrentFocus() != null)
-                mInputMethodManager.hideSoftInputFromWindow(getCurrentFocus()
-                        .getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-        }
-    }
 
 // 设置全屏
     protected void fullScreen(Activity activity) {

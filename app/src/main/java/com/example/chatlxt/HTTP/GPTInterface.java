@@ -5,6 +5,7 @@ import com.example.chatlxt.Entity.GsonBean.Sending.GPTRequest;
 import com.example.chatlxt.Global.Constant;
 
 import io.reactivex.Observable;
+import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
@@ -13,5 +14,7 @@ public interface GPTInterface {
 
     @POST(Constant.GPT_CHAT)
     Observable<GPTResponse> chat(@Header("Authorization") String token, @Body GPTRequest body);
+//    Call<GPTResponse> chat(@Header("Authorization") String token, @Body GPTRequest body);
+
 
 }

@@ -1,18 +1,13 @@
 package com.example.chatlxt.Dao;
 
-import java.util.List;
-import java.util.ArrayList;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 
 import org.greenrobot.greendao.AbstractDao;
 import org.greenrobot.greendao.Property;
-import org.greenrobot.greendao.internal.SqlUtils;
 import org.greenrobot.greendao.internal.DaoConfig;
 import org.greenrobot.greendao.database.Database;
 import org.greenrobot.greendao.database.DatabaseStatement;
-
-import com.example.chatlxt.Entity.DaoBean.Message;
 
 import com.example.chatlxt.Entity.DaoBean.Chat;
 
@@ -31,11 +26,11 @@ public class ChatDao extends AbstractDao<Chat, Long> {
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
         public final static Property CreateTime = new Property(1, Long.class, "createTime", false, "CREATE_TIME");
-        public final static Property FirstQuestion = new Property(2, Long.class, "firstQuestion", false, "FIRST_QUESTION");
-        public final static Property FirstAnswer = new Property(3, Long.class, "firstAnswer", false, "FIRST_ANSWER");
+        public final static Property FirstQuestion = new Property(2, String.class, "firstQuestion", false, "FIRST_QUESTION");
+        public final static Property FirstAnswer = new Property(3, String.class, "firstAnswer", false, "FIRST_ANSWER");
+        public final static Property Character = new Property(4, String.class, "character", false, "CHARACTER");
+        public final static Property Prologue = new Property(5, String.class, "prologue", false, "PROLOGUE");
     }
-
-    private DaoSession daoSession;
 
 
     public ChatDao(DaoConfig config) {
@@ -44,7 +39,6 @@ public class ChatDao extends AbstractDao<Chat, Long> {
     
     public ChatDao(DaoConfig config, DaoSession daoSession) {
         super(config, daoSession);
-        this.daoSession = daoSession;
     }
 
     /** Creates the underlying database table. */
@@ -53,8 +47,10 @@ public class ChatDao extends AbstractDao<Chat, Long> {
         db.execSQL("CREATE TABLE " + constraint + "\"CHAT\" (" + //
                 "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
                 "\"CREATE_TIME\" INTEGER," + // 1: createTime
-                "\"FIRST_QUESTION\" INTEGER," + // 2: firstQuestion
-                "\"FIRST_ANSWER\" INTEGER);"); // 3: firstAnswer
+                "\"FIRST_QUESTION\" TEXT," + // 2: firstQuestion
+                "\"FIRST_ANSWER\" TEXT," + // 3: firstAnswer
+                "\"CHARACTER\" TEXT," + // 4: character
+                "\"PROLOGUE\" TEXT);"); // 5: prologue
     }
 
     /** Drops the underlying database table. */
@@ -76,6 +72,26 @@ public class ChatDao extends AbstractDao<Chat, Long> {
         if (createTime != null) {
             stmt.bindLong(2, createTime);
         }
+ 
+        String firstQuestion = entity.getFirstQuestion();
+        if (firstQuestion != null) {
+            stmt.bindString(3, firstQuestion);
+        }
+ 
+        String firstAnswer = entity.getFirstAnswer();
+        if (firstAnswer != null) {
+            stmt.bindString(4, firstAnswer);
+        }
+ 
+        String character = entity.getCharacter();
+        if (character != null) {
+            stmt.bindString(5, character);
+        }
+ 
+        String prologue = entity.getPrologue();
+        if (prologue != null) {
+            stmt.bindString(6, prologue);
+        }
     }
 
     @Override
@@ -91,12 +107,26 @@ public class ChatDao extends AbstractDao<Chat, Long> {
         if (createTime != null) {
             stmt.bindLong(2, createTime);
         }
-    }
-
-    @Override
-    protected final void attachEntity(Chat entity) {
-        super.attachEntity(entity);
-        entity.__setDaoSession(daoSession);
+ 
+        String firstQuestion = entity.getFirstQuestion();
+        if (firstQuestion != null) {
+            stmt.bindString(3, firstQuestion);
+        }
+ 
+        String firstAnswer = entity.getFirstAnswer();
+        if (firstAnswer != null) {
+            stmt.bindString(4, firstAnswer);
+        }
+ 
+        String character = entity.getCharacter();
+        if (character != null) {
+            stmt.bindString(5, character);
+        }
+ 
+        String prologue = entity.getPrologue();
+        if (prologue != null) {
+            stmt.bindString(6, prologue);
+        }
     }
 
     @Override
@@ -108,7 +138,11 @@ public class ChatDao extends AbstractDao<Chat, Long> {
     public Chat readEntity(Cursor cursor, int offset) {
         Chat entity = new Chat( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
-            cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1) // createTime
+            cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1), // createTime
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // firstQuestion
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // firstAnswer
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // character
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5) // prologue
         );
         return entity;
     }
@@ -117,6 +151,10 @@ public class ChatDao extends AbstractDao<Chat, Long> {
     public void readEntity(Cursor cursor, Chat entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setCreateTime(cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1));
+        entity.setFirstQuestion(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setFirstAnswer(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setCharacter(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setPrologue(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
      }
     
     @Override
@@ -144,102 +182,4 @@ public class ChatDao extends AbstractDao<Chat, Long> {
         return true;
     }
     
-    private String selectDeep;
-
-    protected String getSelectDeep() {
-        if (selectDeep == null) {
-            StringBuilder builder = new StringBuilder("SELECT ");
-            SqlUtils.appendColumns(builder, "T", getAllColumns());
-            builder.append(',');
-            SqlUtils.appendColumns(builder, "T0", daoSession.getMessageDao().getAllColumns());
-            builder.append(',');
-            SqlUtils.appendColumns(builder, "T1", daoSession.getMessageDao().getAllColumns());
-            builder.append(" FROM CHAT T");
-            builder.append(" LEFT JOIN MESSAGE T0 ON T.\"FIRST_QUESTION\"=T0.\"_id\"");
-            builder.append(" LEFT JOIN MESSAGE T1 ON T.\"FIRST_ANSWER\"=T1.\"_id\"");
-            builder.append(' ');
-            selectDeep = builder.toString();
-        }
-        return selectDeep;
-    }
-    
-    protected Chat loadCurrentDeep(Cursor cursor, boolean lock) {
-        Chat entity = loadCurrent(cursor, 0, lock);
-        int offset = getAllColumns().length;
-
-        Message firstQuestion = loadCurrentOther(daoSession.getMessageDao(), cursor, offset);
-        entity.setFirstQuestion(firstQuestion);
-        offset += daoSession.getMessageDao().getAllColumns().length;
-
-        Message firstAnswer = loadCurrentOther(daoSession.getMessageDao(), cursor, offset);
-        entity.setFirstAnswer(firstAnswer);
-
-        return entity;    
-    }
-
-    public Chat loadDeep(Long key) {
-        assertSinglePk();
-        if (key == null) {
-            return null;
-        }
-
-        StringBuilder builder = new StringBuilder(getSelectDeep());
-        builder.append("WHERE ");
-        SqlUtils.appendColumnsEqValue(builder, "T", getPkColumns());
-        String sql = builder.toString();
-        
-        String[] keyArray = new String[] { key.toString() };
-        Cursor cursor = db.rawQuery(sql, keyArray);
-        
-        try {
-            boolean available = cursor.moveToFirst();
-            if (!available) {
-                return null;
-            } else if (!cursor.isLast()) {
-                throw new IllegalStateException("Expected unique result, but count was " + cursor.getCount());
-            }
-            return loadCurrentDeep(cursor, true);
-        } finally {
-            cursor.close();
-        }
-    }
-    
-    /** Reads all available rows from the given cursor and returns a list of new ImageTO objects. */
-    public List<Chat> loadAllDeepFromCursor(Cursor cursor) {
-        int count = cursor.getCount();
-        List<Chat> list = new ArrayList<Chat>(count);
-        
-        if (cursor.moveToFirst()) {
-            if (identityScope != null) {
-                identityScope.lock();
-                identityScope.reserveRoom(count);
-            }
-            try {
-                do {
-                    list.add(loadCurrentDeep(cursor, false));
-                } while (cursor.moveToNext());
-            } finally {
-                if (identityScope != null) {
-                    identityScope.unlock();
-                }
-            }
-        }
-        return list;
-    }
-    
-    protected List<Chat> loadDeepAllAndCloseCursor(Cursor cursor) {
-        try {
-            return loadAllDeepFromCursor(cursor);
-        } finally {
-            cursor.close();
-        }
-    }
-    
-
-    /** A raw-style query where you can pass any WHERE clause and arguments. */
-    public List<Chat> queryDeep(String where, String... selectionArg) {
-        Cursor cursor = db.rawQuery(getSelectDeep() + where, selectionArg);
-        return loadDeepAllAndCloseCursor(cursor);
-    }
- 
 }

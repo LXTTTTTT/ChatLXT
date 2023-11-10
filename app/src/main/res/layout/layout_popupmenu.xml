@@ -32,19 +32,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingTop="3dp"
-            android:paddingBottom="3dp"
-            android:paddingLeft="5dp"
-            android:paddingRight="8dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:gravity="center">
             <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@drawable/chibi_maruko" />
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@mipmap/delete_icon" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="清除记录"
+                android:layout_marginLeft="5dp"
                 android:textSize="18dp"
                 android:textColor="@color/gray_1"
                 android:layout_gravity="center_vertical"/>
@@ -62,20 +63,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingTop="3dp"
-            android:paddingBottom="3dp"
-            android:paddingLeft="5dp"
-            android:paddingRight="8dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:gravity="center">
             <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@drawable/chibi_maruko" />
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@mipmap/role_icon" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="角色扮演"
                 android:textSize="18dp"
+                android:layout_marginLeft="5dp"
                 android:textColor="@color/gray_1"
                 android:layout_gravity="center_vertical"/>
         </LinearLayout>
@@ -92,18 +94,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingTop="3dp"
-            android:paddingBottom="3dp"
-            android:paddingLeft="5dp"
-            android:paddingRight="8dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:gravity="center">
             <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@drawable/chibi_maruko" />
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@mipmap/key_icon" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
                 android:textSize="18dp"
                 android:textColor="@color/gray_1"
                 android:text="设置KEY"

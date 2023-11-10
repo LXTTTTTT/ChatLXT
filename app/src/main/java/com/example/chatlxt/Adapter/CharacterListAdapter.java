@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class CharacterListAdapter extends RecyclerView.Adapter<CharacterListAdapter.MyViewHolder> {
@@ -78,7 +79,13 @@ public class CharacterListAdapter extends RecyclerView.Adapter<CharacterListAdap
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+//        Iterator<String[]> characters_iter = characters.iterator();
         String[] character = characters.get(position);
+        if (position == getItemCount() - 1) {
+            holder.bottom_line.setVisibility(View.INVISIBLE);
+        }else {
+            holder.bottom_line.setVisibility(View.VISIBLE);
+        }
         holder.title.setText(character[0]);
         holder.title.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,9 +95,7 @@ public class CharacterListAdapter extends RecyclerView.Adapter<CharacterListAdap
                 }
             }
         });
-        if(position==characters.size()-1){
-//            holder.bottom_line.setVisibility(View.INVISIBLE);
-        }
+
     }
 
     @Override
@@ -111,7 +116,7 @@ public class CharacterListAdapter extends RecyclerView.Adapter<CharacterListAdap
 
 // 接口 ----------------------------------------------------------
     public interface onItemClickListener{
-        void onItemClickListener(String title,String character);
+        void onItemClickListener(String character,String prologue);
     }
     public onItemClickListener onItemClickListener;
     public void setOnItemClickListener(onItemClickListener onItemClickListener){

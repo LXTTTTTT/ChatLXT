@@ -20,6 +20,7 @@ abstract class BaseFragment:Fragment() {
     lateinit var title: TextView;
     lateinit var back: ImageView;
     lateinit var more: ImageView;
+    lateinit var delete: ImageView;
     lateinit var layoutView:View;
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,6 +37,8 @@ abstract class BaseFragment:Fragment() {
         title = layoutView.findViewById(R.id.title)
         back = layoutView.findViewById(R.id.back)
         more = layoutView.findViewById(R.id.more)
+        delete = layoutView.findViewById(R.id.delete)
+        delete.visibility = View.GONE
 
         initView(layoutView)  // 初始化控件事件
         // 设置 TAG

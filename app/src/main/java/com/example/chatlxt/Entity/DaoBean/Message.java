@@ -20,9 +20,10 @@ public class Message {
     public Long belong;  // 归属（属于哪一个聊天）
     public Long answer;  // 答案（对应的答案是哪个）
     public int status = Constant.MESSAGE_SEND;  // 消息状态
-    @Generated(hash = 762753936)
+    public int type = Constant.MESSAGE_QUESTION;  // 消息的类型
+    @Generated(hash = 1254357628)
     public Message(Long id, Long createTime, String content, String role,
-            Long belong, Long answer, int status) {
+            Long belong, Long answer, int status, int type) {
         this.id = id;
         this.createTime = createTime;
         this.content = content;
@@ -30,6 +31,7 @@ public class Message {
         this.belong = belong;
         this.answer = answer;
         this.status = status;
+        this.type = type;
     }
     @Generated(hash = 637306882)
     public Message() {
@@ -75,6 +77,12 @@ public class Message {
     }
     public void setAnswer(Long answer) {
         this.answer = answer;
+    }
+    public int getType() {
+        return this.type;
+    }
+    public void setType(int type) {
+        this.type = type;
     }
 
     

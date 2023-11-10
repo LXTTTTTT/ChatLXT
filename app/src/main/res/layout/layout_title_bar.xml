@@ -6,8 +6,9 @@
 
     <ImageView
         android:id="@+id/back"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:padding="5dp"
         android:layout_centerVertical="true"
         android:src="@mipmap/back_icon" />
 
@@ -21,14 +22,23 @@
         android:textColor="@color/black"
         android:visibility="gone"/>
 
+
     <ImageView
         android:id="@+id/more"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:padding="5dp"
-        android:layout_marginRight="5dp"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
+        android:layout_marginRight="5dp"
+        android:padding="5dp"
         android:src="@drawable/ripple_1" />
+    <ImageView
+        android:id="@+id/delete"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="5dp"
+        android:src="@mipmap/delete_icon_2" />
 
 </RelativeLayout>

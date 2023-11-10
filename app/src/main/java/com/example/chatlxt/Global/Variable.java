@@ -1,5 +1,6 @@
 package com.example.chatlxt.Global;
 
+import com.example.chatlxt.Entity.DaoBean.Chat;
 import com.example.chatlxt.Entity.DaoBean.Message;
 import com.example.chatlxt.Utils.SharedPreferencesUtil;
 
@@ -8,6 +9,7 @@ public class Variable {
 
     public static boolean DebugMode = true;  // 调试模式
 
+    public static Chat nowChat;  // 当前的聊天
     public static Message lastestSend;
     public static Message lastestReceive;
 

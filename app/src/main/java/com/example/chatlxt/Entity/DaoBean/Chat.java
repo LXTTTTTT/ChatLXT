@@ -18,22 +18,20 @@ public class Chat {
     private Long id;
 
     public Long createTime;  // 创建时间
-    @ToOne
-    public Message firstQuestion;  // 首条提问
-    @ToOne
-    public Message firstAnswer;  // 首条回答
 
-    /** Used to resolve relations */
-    @Generated(hash = 2040040024)
-    private transient DaoSession daoSession;
-
-    /** Used for active entity operations. */
-    @Generated(hash = 1596497024)
-    private transient ChatDao myDao;
-    @Generated(hash = 395529260)
-    public Chat(Long id, Long createTime) {
+    public String firstQuestion;  // 首条提问
+    public String firstAnswer;  // 首条回答
+    public String character;  // 角色
+    public String prologue;  // 出场白
+    @Generated(hash = 773016478)
+    public Chat(Long id, Long createTime, String firstQuestion, String firstAnswer,
+            String character, String prologue) {
         this.id = id;
         this.createTime = createTime;
+        this.firstQuestion = firstQuestion;
+        this.firstAnswer = firstAnswer;
+        this.character = character;
+        this.prologue = prologue;
     }
     @Generated(hash = 519536279)
     public Chat() {
@@ -50,100 +48,40 @@ public class Chat {
     public void setCreateTime(Long createTime) {
         this.createTime = createTime;
     }
-    @Generated(hash = 1403329283)
-    private transient boolean firstQuestion__refreshed;
-    /** To-one relationship, resolved on first access. */
-    @Generated(hash = 454602761)
-    public Message getFirstQuestion() {
-        if (firstQuestion != null || !firstQuestion__refreshed) {
-            if (daoSession == null) {
-                throw new DaoException("Entity is detached from DAO context");
-            }
-            MessageDao targetDao = daoSession.getMessageDao();
-            targetDao.refresh(firstQuestion);
-            firstQuestion__refreshed = true;
-        }
-        return firstQuestion;
+    public String getFirstQuestion() {
+        return this.firstQuestion;
     }
-    /** To-one relationship, returned entity is not refreshed and may carry only the PK property. */
-    @Generated(hash = 2071173072)
-    public Message peakFirstQuestion() {
-        return firstQuestion;
+    public void setFirstQuestion(String firstQuestion) {
+        this.firstQuestion = firstQuestion;
     }
-    /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 725208744)
-    public void setFirstQuestion(Message firstQuestion) {
-        synchronized (this) {
-            this.firstQuestion = firstQuestion;
-            firstQuestion__refreshed = true;
-        }
+    public String getFirstAnswer() {
+        return this.firstAnswer;
     }
-    @Generated(hash = 1516739579)
-    private transient boolean firstAnswer__refreshed;
-    /** To-one relationship, resolved on first access. */
-    @Generated(hash = 1807369303)
-    public Message getFirstAnswer() {
-        if (firstAnswer != null || !firstAnswer__refreshed) {
-            if (daoSession == null) {
-                throw new DaoException("Entity is detached from DAO context");
-            }
-            MessageDao targetDao = daoSession.getMessageDao();
-            targetDao.refresh(firstAnswer);
-            firstAnswer__refreshed = true;
-        }
-        return firstAnswer;
+    public void setFirstAnswer(String firstAnswer) {
+        this.firstAnswer = firstAnswer;
     }
-    /** To-one relationship, returned entity is not refreshed and may carry only the PK property. */
-    @Generated(hash = 436002723)
-    public Message peakFirstAnswer() {
-        return firstAnswer;
+    public String getCharacter() {
+        return this.character;
     }
-    /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 1938748525)
-    public void setFirstAnswer(Message firstAnswer) {
-        synchronized (this) {
-            this.firstAnswer = firstAnswer;
-            firstAnswer__refreshed = true;
-        }
+    public void setCharacter(String character) {
+        this.character = character;
     }
-    /**
-     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#delete(Object)}.
-     * Entity must attached to an entity context.
-     */
-    @Generated(hash = 128553479)
-    public void delete() {
-        if (myDao == null) {
-            throw new DaoException("Entity is detached from DAO context");
-        }
-        myDao.delete(this);
+    public String getPrologue() {
+        return this.prologue;
     }
-    /**
-     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
-     * Entity must attached to an entity context.
-     */
-    @Generated(hash = 1942392019)
-    public void refresh() {
-        if (myDao == null) {
-            throw new DaoException("Entity is detached from DAO context");
-        }
-        myDao.refresh(this);
-    }
-    /**
-     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#update(Object)}.
-     * Entity must attached to an entity context.
-     */
-    @Generated(hash = 713229351)
-    public void update() {
-        if (myDao == null) {
-            throw new DaoException("Entity is detached from DAO context");
-        }
-        myDao.update(this);
-    }
-    /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 1004576325)
-    public void __setDaoSession(DaoSession daoSession) {
-        this.daoSession = daoSession;
-        myDao = daoSession != null ? daoSession.getChatDao() : null;
+    public void setPrologue(String prologue) {
+        this.prologue = prologue;
     }
 
+    @Override
+    public String toString() {
+        return "Chat{" +
+                "id=" + id +
+                ", createTime=" + createTime +
+                ", firstQuestion='" + firstQuestion + '\'' +
+                ", firstAnswer='" + firstAnswer + '\'' +
+                ", character='" + character + '\'' +
+                ", prologue='" + prologue + '\'' +
+                '}';
+    }
 }

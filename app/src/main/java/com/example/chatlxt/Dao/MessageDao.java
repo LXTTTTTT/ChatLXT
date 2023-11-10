@@ -31,6 +31,7 @@ public class MessageDao extends AbstractDao<Message, Long> {
         public final static Property Belong = new Property(4, Long.class, "belong", false, "BELONG");
         public final static Property Answer = new Property(5, Long.class, "answer", false, "ANSWER");
         public final static Property Status = new Property(6, int.class, "status", false, "STATUS");
+        public final static Property Type = new Property(7, int.class, "type", false, "TYPE");
     }
 
 
@@ -52,7 +53,8 @@ public class MessageDao extends AbstractDao<Message, Long> {
                 "\"ROLE\" TEXT," + // 3: role
                 "\"BELONG\" INTEGER," + // 4: belong
                 "\"ANSWER\" INTEGER," + // 5: answer
-                "\"STATUS\" INTEGER NOT NULL );"); // 6: status
+                "\"STATUS\" INTEGER NOT NULL ," + // 6: status
+                "\"TYPE\" INTEGER NOT NULL );"); // 7: type
     }
 
     /** Drops the underlying database table. */
@@ -95,6 +97,7 @@ public class MessageDao extends AbstractDao<Message, Long> {
             stmt.bindLong(6, answer);
         }
         stmt.bindLong(7, entity.getStatus());
+        stmt.bindLong(8, entity.getType());
     }
 
     @Override
@@ -131,6 +134,7 @@ public class MessageDao extends AbstractDao<Message, Long> {
             stmt.bindLong(6, answer);
         }
         stmt.bindLong(7, entity.getStatus());
+        stmt.bindLong(8, entity.getType());
     }
 
     @Override
@@ -147,7 +151,8 @@ public class MessageDao extends AbstractDao<Message, Long> {
             cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // role
             cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4), // belong
             cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5), // answer
-            cursor.getInt(offset + 6) // status
+            cursor.getInt(offset + 6), // status
+            cursor.getInt(offset + 7) // type
         );
         return entity;
     }
@@ -161,6 +166,7 @@ public class MessageDao extends AbstractDao<Message, Long> {
         entity.setBelong(cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4));
         entity.setAnswer(cursor.isNull(offset + 5) ? null : cursor.getLong(offset + 5));
         entity.setStatus(cursor.getInt(offset + 6));
+        entity.setType(cursor.getInt(offset + 7));
      }
     
     @Override

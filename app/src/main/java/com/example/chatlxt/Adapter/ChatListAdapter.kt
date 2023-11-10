@@ -35,12 +35,19 @@ class ChatListAdapter(context: Context, list: List<Chat>): RecyclerView.Adapter<
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val chat = chatList[position]
         try {
+//            Log.e(TAG, "onBindViewHolder: " + chat.firstAnswer)
             val viewHolder = holder as ChatMessageHolder
-            viewHolder.viewBinding.question.text = chat.firstQuestion.content
-            viewHolder.viewBinding.answer.text = chat.firstAnswer.content
-            viewHolder.viewBinding.root.setOnClickListener {
+            chat.firstQuestion?.let { viewHolder.viewBinding.question.text = it }
+            chat.firstAnswer?.let { viewHolder.viewBinding.answer.text = it }
+            viewHolder.viewBinding.item.setOnClickListener {
                 listener?.let { it.onChoice(chat.id) }
+                Log.e(TAG, "点击的聊天是: ${chat.toString()}")
             }
+            viewHolder.viewBinding.delete.setOnClickListener(object :View.OnClickListener{
+                override fun onClick(p0: View?) {
+                    listener?.let { it.onDelete(chat.id) }
+                }
+            })
         }catch (e:Exception){
             e.printStackTrace()
         }
@@ -58,8 +65,6 @@ class ChatListAdapter(context: Context, list: List<Chat>): RecyclerView.Adapter<
         }
     }
 
-
-
     fun update(list: MutableList<Chat>) {
         chatList = list
         notifyDataSetChanged()
@@ -72,6 +77,7 @@ class ChatListAdapter(context: Context, list: List<Chat>): RecyclerView.Adapter<
     }
     interface AdapterListener {
         fun onChoice(id:Long)
+        fun onDelete(id:Long)
     }
 
 }

@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,8 @@ import com.example.chatlxt.Adapter.CharacterListAdapter;
 import com.example.chatlxt.R;
 import com.example.chatlxt.databinding.DialogCustomBinding;
 
+import java.util.List;
+
 
 // 自定义内容 dialog
 public class CustomDialog extends DialogFragment {
@@ -24,8 +27,16 @@ public class CustomDialog extends DialogFragment {
     private String TAG = "CustomDialog";
     DialogCustomBinding viewBinding;
     CharacterListAdapter adapter;
+    String title = "标题";
+    String cancel = "取消";
 
     public CustomDialog() {}
+
+    public void setData(String title,String cancel, OnDialogWork onDialogWork){
+        this.title = title;
+        this.cancel = cancel;
+        this.onDialogWork = onDialogWork;
+    }
 
     @Override
     public void onStart() {
@@ -64,8 +75,8 @@ public class CustomDialog extends DialogFragment {
         adapter = new CharacterListAdapter(getContext());
         adapter.setOnItemClickListener(new CharacterListAdapter.onItemClickListener() {
             @Override
-            public void onItemClickListener(String title, String character) {
-                if(onDialogWork!=null){onDialogWork.onChoice(title,character);}
+            public void onItemClickListener(String character, String prologue) {
+                if(onDialogWork!=null){onDialogWork.onChoice(character,prologue);}
             }
         });
         viewBinding.characterList.setAdapter(adapter);
@@ -77,6 +88,8 @@ public class CustomDialog extends DialogFragment {
                 dismiss();
             }
         });
+        viewBinding.title.setText(title);
+        viewBinding.cancel.setText(cancel);
         return viewBinding.getRoot();
     }
 

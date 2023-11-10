@@ -1,7 +1,9 @@
 package com.example.chatlxt.Fragment
 
+import android.os.Handler
 import android.view.View
 import android.view.View.OnClickListener
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.chatlxt.Adapter.SingleMessageAdapter
 import com.example.chatlxt.Base.BaseFragment
@@ -13,7 +15,6 @@ import com.example.chatlxt.Utils.DaoUtil
 import com.example.chatlxt.Utils.NotificationCenter
 import com.example.chatlxt.Utils.RequestUtil
 import com.example.chatlxt.View.CustomDialog
-import com.example.chatlxt.View.CustomDialog.OnDialogWork
 import com.example.chatlxt.databinding.FragmentSingleBinding
 
 class SingleSessionFragment: BaseFragment(),NotificationCenter.NotificationCenterDelegate {
@@ -22,7 +23,18 @@ class SingleSessionFragment: BaseFragment(),NotificationCenter.NotificationCente
     var messageList:MutableList<Message> = arrayListOf()
     lateinit var adapter:SingleMessageAdapter
     lateinit var msg:com.example.chatlxt.Entity.GsonBean.Receiving.Message  // 最后一条消息内容
-    var character:String = ""  // 需要扮演的角色
+    var prologue:String = ""  // 序言
+    private val handler: Handler = object : Handler() {
+        override fun handleMessage(msg: android.os.Message) {
+            super.handleMessage(msg)
+            when (msg.what) {
+                0 -> if (adapter.itemCount > 1) {
+                    viewBinding.messageList.smoothScrollToPosition(adapter.itemCount - 1)
+                }
+            }
+        }
+    }
+
     override fun beforeSetLayout() {}
     override fun getTAG(): String { return "SingleSessionFragment"; }
 
@@ -33,20 +45,6 @@ class SingleSessionFragment: BaseFragment(),NotificationCenter.NotificationCente
 
 
     override fun initView(view: View) {
-//        val message1 = Message()
-//        message1.content = "111111"
-//        message1.role = Constant.GPT_USER
-//        message1.createTime = 1698741293000L
-//        val message2 = Message()
-//        message2.content = "111111"
-//        message2.createTime = 1698741294000L
-//        message2.role = Constant.GPT_ASSISTANT
-//        messageList.add(message1)
-//        messageList.add(message2)
-//        messageList.add(message1)
-//        messageList.add(message2)
-//        messageList.add(message2)
-
         NotificationCenter.standard().addveObserver(this,Constant.RECEIVE_MESSAGE)
         init_adapter()
         init_message()
@@ -54,7 +52,7 @@ class SingleSessionFragment: BaseFragment(),NotificationCenter.NotificationCente
     }
 
     fun init_adapter() {
-        adapter = SingleMessageAdapter(my_context,messageList)
+        adapter = SingleMessageAdapter(my_context,messageList,null,false)
         // 列表事件
         adapter.setAdapterListener(object : SingleMessageAdapter.AdapterListener{
             // 重发
@@ -72,9 +70,9 @@ class SingleSessionFragment: BaseFragment(),NotificationCenter.NotificationCente
             }
         })
         viewBinding.messageList.adapter = adapter
-        val layoutManager = LinearLayoutManager(my_context,LinearLayoutManager.VERTICAL,false)
-        layoutManager.stackFromEnd = true  // 让 recyclerview 跟随键盘弹起
-//        viewBinding.messageList.layoutManager = GridLayoutManager(my_context,1)
+//        val layoutManager = LinearLayoutManager(my_context,LinearLayoutManager.VERTICAL,false)
+//        layoutManager.stackFromEnd = true  // 让 recyclerview 跟随键盘弹起
+        val layoutManager = GridLayoutManager(my_context,1)
         viewBinding.messageList.layoutManager = layoutManager
     }
 
@@ -84,13 +82,7 @@ class SingleSessionFragment: BaseFragment(),NotificationCenter.NotificationCente
         messageList.reverse()  // 反转术式
         loge("消息数量：${messageList.size}")
         adapter.update(messageList)
-        if(adapter.itemCount>1){
-            viewBinding.messageList.smoothScrollToPosition(adapter.itemCount - 1)  // 使用这个方法
-        }
-
-//        viewBinding.messageList.layoutManager?.also {
-//            it.scrollToPosition(viewBinding.messageList.adapter!!.itemCount - 1)
-//        }
+        handler.sendEmptyMessage(0)
     }
 
     fun init_control() {
@@ -101,21 +93,30 @@ class SingleSessionFragment: BaseFragment(),NotificationCenter.NotificationCente
             override fun onClick(p0: View?) {
                 application.showPopupMenu(p0,object :OnClickListener{
                     override fun onClick(p0: View?) {
+                        if(messageList.isEmpty()) {
+                            application.showToast("当前暂无消息",0)
+                            return
+                        }
                         // 清除记录
                         application.hidePopupMenu()
-                        DaoUtil.getMessageBuilder().where(MessageDao.Properties.Belong.eq(0)).buildDelete().executeDeleteWithoutDetachingEntities()  // 删除数据
-                        messageList.clear()
-                        adapter.update(messageList)  // 清空列表
+                        application.showWarnDialog(null,"记录清除后不可恢复\n确定要清除吗？",object : OnClickListener{
+                            override fun onClick(p0: View?) {
+                                DaoUtil.getMessageBuilder().where(MessageDao.Properties.Belong.eq(0)).buildDelete().executeDeleteWithoutDetachingEntities()  // 删除数据
+                                messageList.clear()
+                                adapter.update(messageList)  // 清空列表
+                                application.hideWarnDialog()
+                            }
+                        })
                     }
                 },object :OnClickListener{
                     override fun onClick(p0: View?) {
                         // 角色扮演
                         application.hidePopupMenu()
-                        application.showCustomDialog(activity,object : CustomDialog.OnDialogWork{
-                            override fun onChoice(title: String?, character: String?) {
-                                loge("$title : ${character?.length}")
-                                title?.let { setTitle(it) }
-                                character?.let { this@SingleSessionFragment.character = it }
+                        application.showCustomDialog(activity,"变身!!","告辞",object : CustomDialog.OnDialogWork{
+                            override fun onChoice(character: String?, prologue: String?) {
+                                loge("$character : ${prologue?.length}")
+                                character?.let { setTitle(it) }
+                                prologue?.let { this@SingleSessionFragment.prologue = it }
                                 application.hideCustomDialog()
                             }
                         })
@@ -137,6 +138,7 @@ class SingleSessionFragment: BaseFragment(),NotificationCenter.NotificationCente
             val message = Message()
             message.content = content
             message.role = Constant.GPT_USER
+            message.type = Constant.MESSAGE_QUESTION;
             message.createTime = System.currentTimeMillis();
             message.belong = 0L
             Variable.lastestSend = message
@@ -146,17 +148,24 @@ class SingleSessionFragment: BaseFragment(),NotificationCenter.NotificationCente
             askQuestion(content)
             viewBinding.content.text.clear()  // 清空输入栏
         }
+        // 解决键盘弹起时遮挡 recyclerview 问题
+        viewBinding.content.setOnFocusChangeListener { view, b ->
+            if (b) handler.sendEmptyMessageDelayed(0,250)
+        }
+        viewBinding.content.setOnClickListener {
+            handler.sendEmptyMessageDelayed(0,250)
+        }
+
     }
 
     fun askQuestion(question:String){
         // 发送请求
-        val character_question = character + question
+        val character_question = prologue + question
         msg = com.example.chatlxt.Entity.GsonBean.Receiving.Message(Constant.GPT_USER,character_question)
         var msgs = arrayListOf<com.example.chatlxt.Entity.GsonBean.Receiving.Message>()
         msgs.add(msg)
         RequestUtil.getInstance().chat(msgs)
     }
-
 
     override fun didReceivedNotification(id: Int, vararg args: Any?) {
         when (id) {

@@ -9,11 +9,17 @@ import android.os.Bundle;
 import android.view.WindowManager;
 
 import com.example.chatlxt.Base.BaseActivity;
+import com.example.chatlxt.Dao.ChatDao;
+import com.example.chatlxt.Entity.DaoBean.Chat;
 import com.example.chatlxt.Fragment.KeepSessionFragment;
 import com.example.chatlxt.Fragment.SingleSessionFragment;
+import com.example.chatlxt.Global.Variable;
+import com.example.chatlxt.Utils.DaoUtil;
 import com.example.chatlxt.View.BottomBar;
 import com.example.chatlxt.databinding.ActivityMainBinding;
 import com.example.chatlxt.databinding.FragmentSingleBinding;
+
+import java.util.List;
 
 public class MainActivity extends BaseActivity {
 
@@ -34,6 +40,23 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void initView(Bundle savedInstanceState) {
+        // 如果没有单次聊天数据库就创建
+        List<Chat> chats = DaoUtil.getChatBuilder().where(ChatDao.Properties.Id.eq(0)).list();
+        if(chats==null || chats.isEmpty()){
+            Chat singleChat = new Chat();
+            singleChat.setId(0L);
+            DaoUtil.getInstance().getDaoSession().insertOrReplace(singleChat);
+            Variable.nowChat = singleChat;
+        }else {
+            Variable.nowChat = chats.get(0);
+            loge("单次会话 id:"+chats.get(0).getId());
+        }
+        init_fragment();
+    }
+
+    @Override protected void initData() {}
+
+    private void init_fragment(){
         singleSessionFragment = new SingleSessionFragment();
         keepSessionFragment = new KeepSessionFragment();
         viewBinding.bottomBar.setContainer(R.id.fragment)  // 设置容器控件
@@ -52,11 +75,6 @@ public class MainActivity extends BaseActivity {
         });
     }
 
-    @Override
-    protected void initData() {
-
-    }
-
     private long backPressedTime = 0;
     private long backPressInterval = 2000;
     @Override
@@ -64,11 +82,6 @@ public class MainActivity extends BaseActivity {
         long currentTime = System.currentTimeMillis();
         if(currentTime - backPressedTime < backPressInterval){
             super.onBackPressed();
-            //返回键返回桌面
-//            Intent home = new Intent(Intent.ACTION_MAIN);
-//            home.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//            home.addCategory(Intent.CATEGORY_HOME);
-//            startActivity(home);
         }else {
             application.showToast("再次点击返回按键返回桌面",0);
             backPressedTime = currentTime;

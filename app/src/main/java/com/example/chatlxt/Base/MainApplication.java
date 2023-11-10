@@ -33,6 +33,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.chatlxt.R;
 import com.example.chatlxt.View.CustomDialog;
+import com.example.chatlxt.View.WarnDialog;
 import com.example.chatlxt.ViewModel.DataViewModel;
 import com.example.chatlxt.Global.Variable;
 import com.example.chatlxt.HTTP.GPTInterface;
@@ -58,8 +59,10 @@ public class MainApplication extends Application {
 
 // Control --------------------------------
     private AlertDialog alertDialog;  // 自定义图像的系统警告框 AlertDialog
-    public PopupWindow popupWindow;  // 长按后弹出来的弹窗
+    public PopupWindow popupWindow;
+    public PopupWindow popupWindow2;
     private CustomDialog customDialog;  // 角色扮演弹窗
+    private WarnDialog warnDialog;  // 警告 dialog
 
 // ViewModel ------------------------------
 //    public TextViewModel textViewModel;
@@ -173,6 +176,24 @@ public class MainApplication extends Application {
         if(popupWindow!=null){popupWindow.dismiss();}
     }
 
+    public void showPopupMenu2(View view, View.OnClickListener... onClickListeners){
+        popupWindow2 = null;
+        View customView = layoutInflater.inflate(R.layout.layout_popupmenu_2, null);
+        if(onClickListeners.length>0 && onClickListeners[0]!=null){customView.findViewById(R.id.clean).setOnClickListener(onClickListeners[0]);}
+        if(onClickListeners.length>1 && onClickListeners[1]!=null){customView.findViewById(R.id.add).setOnClickListener(onClickListeners[1]);}
+
+        popupWindow2 = new PopupWindow(customView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+        popupWindow2.setAnimationStyle(R.style.PopupMenuAnimation);
+        popupWindow2.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        // 关闭软键盘
+        hideKeyboard();
+        popupWindow2.showAsDropDown(view,0,0);
+    }
+
+    public void hidePopupMenu2(){
+        if(popupWindow2!=null){popupWindow2.dismiss();}
+    }
+
     public void showSnackBar(View view,String msg,int length){
         now_activity.runOnUiThread(new Runnable() {
             @Override
@@ -229,13 +250,13 @@ public class MainApplication extends Application {
     }
 
     // 全局唯一 展示 自定义 dialog 方法： target_activity 留空 - 显示在当前 activity，列表用到的数据，保存列表拿到的数据
-    public void showCustomDialog(Activity target_activity, CustomDialog.OnDialogWork onDialogWork) {
+    public void showCustomDialog(Activity target_activity, String title, String cancel, CustomDialog.OnDialogWork onDialogWork) {
         if (customDialog == null) {
             customDialog = new CustomDialog();
         }
         Log.e(TAG, "弹出 CustomDialog");
         if (customDialog.isAdded()) return;
-        customDialog.setOnDialogWork(onDialogWork);
+        customDialog.setData(title,cancel,onDialogWork);
         if(target_activity != null){
             customDialog.show(target_activity.getFragmentManager(), "");
         }else {
@@ -249,11 +270,27 @@ public class MainApplication extends Application {
         }
     }
 
-    // 隐藏键盘
-    public void hideKeyboard(){
-        if (now_activity.window.getAttributes().softInputMode != WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN) {
-            if (now_activity.getCurrentFocus() != null)
-                inputMethodManager.hideSoftInputFromWindow(now_activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    // 全局唯一 展示 警告 dialog 方法： target_activity 留空 - 显示在当前 activity
+    public void showWarnDialog(Activity target_activity, String str, View.OnClickListener onYesClickListener) {
+        if (warnDialog == null) {
+            warnDialog = new WarnDialog();
+        }
+        if (warnDialog.isAdded()) return;
+        Log.e(TAG, "弹出 WarnDialog");
+        // 设置警告的 内容 和 点击确定事件
+        if(target_activity != null){
+            warnDialog.setData(target_activity, str, onYesClickListener);
+            warnDialog.show(target_activity.getFragmentManager(), "");
+        } else {
+            warnDialog.setData(now_activity, str, onYesClickListener);
+            warnDialog.show(now_activity.getFragmentManager(), "");
+        }
+    }
+
+    // 隐藏 警告 dialog 方法
+    public void hideWarnDialog() {
+        if (warnDialog != null) {
+            warnDialog.dismiss();
         }
     }
 
@@ -330,6 +367,23 @@ public class MainApplication extends Application {
         }, seconds*60*1000L);
     }
 
+    // 显示键盘
+    public void showKeyboard(final View view) {
+        view.postDelayed(() -> {
+            if (null != inputMethodManager) {
+                view.requestFocus();
+                inputMethodManager.showSoftInput(view, 0);
+            }
+        }, 50);
+    }
+
+    // 隐藏键盘
+    public void hideKeyboard(){
+        if (now_activity.window.getAttributes().softInputMode != WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN) {
+            if (now_activity.getCurrentFocus() != null)
+                inputMethodManager.hideSoftInputFromWindow(now_activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
+    }
 
 // 定时执行任务 ------------------------------
 

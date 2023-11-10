@@ -11,19 +11,25 @@ import com.example.chatlxt.Entity.GsonBean.Sending.GPTRequest;
 import com.example.chatlxt.Global.Constant;
 import com.example.chatlxt.Global.Variable;
 import com.example.chatlxt.HTTP.GPTInterface;
+import com.example.lxt.Utils.RetrofitUtil;
+
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.OkHttpClient;
+import retrofit2.Retrofit;
 
 // 请求工具
 public class RequestUtil {
 
     String TAG = "RequestUtil";
     GPTInterface request;
-
+    Disposable disposable;  // 当前正在发送的请求
     com.example.chatlxt.Entity.DaoBean.Message result;  // 需要添加的答案消息
 
 // 单例 ----------------------------------------------------
@@ -40,9 +46,23 @@ public class RequestUtil {
 //        this.dataViewModel = dataViewModel;
     }
 
+    // 取消发送请求
+    public void cancelRequest(){
+        try{
+            if (disposable != null && !disposable.isDisposed()) {
+                // 取消发送请求
+                disposable.dispose();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
     public void getxxx(){
         try{
-
+            if (disposable != null && !disposable.isDisposed()) {
+                disposable.dispose();
+            }
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -59,13 +79,15 @@ public class RequestUtil {
                         @Override
                         public void onSubscribe(Disposable d) {
 //                            Log.e(TAG, "onSubscribe: " );
+                            disposable = d;
                             Variable.isAsking = true;
                             // 添加一个空状态消息
                             result = Variable.lastestReceive==null? new com.example.chatlxt.Entity.DaoBean.Message():Variable.lastestReceive;
                             result.role = Constant.GPT_ASSISTANT;
+                            result.type = Constant.MESSAGE_ANSWER;
                             result.createTime = System.currentTimeMillis();
                             result.status = Constant.MESSAGE_SEND;
-                            result.belong = 0L;
+                            result.belong = Variable.nowChat.getId();
                             DaoUtil.getInstance().getDaoSession().insertOrReplace(result);
                             Log.e(TAG, "onSubscribe: "+result.getId()+"/"+result.answer);
                             // 如果最后发那条消息还没有答案的话表示这条消息就是他的答案
