@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit
 object RetrofitUtil {
 
     private val TAG:String = "RetrofitUtil"
-    private var builder:OkHttpClient.Builder?=null
+    var builder:OkHttpClient.Builder?=null
 
     fun init(){
         builder = OkHttpClient.Builder()
@@ -26,9 +26,9 @@ object RetrofitUtil {
         loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY  // 定义打印的数据是请求体
 
         builder!!.addInterceptor(loggingInterceptor)
-            .connectTimeout(30, TimeUnit.SECONDS)  // 设置连接超时
-            .readTimeout(30, TimeUnit.SECONDS)  // 设置读取超时
-            .writeTimeout(30, TimeUnit.SECONDS)  // 设置写入超时
+            .connectTimeout(20, TimeUnit.SECONDS)  // 设置连接超时
+            .readTimeout(20, TimeUnit.SECONDS)  // 设置读取超时
+            .writeTimeout(20, TimeUnit.SECONDS)  // 设置写入超时
     }
 
     // 请求默认的 url

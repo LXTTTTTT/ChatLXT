@@ -39,6 +39,7 @@ class KeepSessionFragment: BaseFragment() {
     override fun onResume() {
         super.onResume()
         init_chat()
+        viewBinding.chatList.closeMenu()
         loge("onResume")
     }
 
@@ -51,6 +52,7 @@ class KeepSessionFragment: BaseFragment() {
                 val intent = Intent(my_context,ChatActivity::class.java)
                 intent.putExtra(ChatActivity.CHAT_ID,id)
                 startActivity(intent)
+                viewBinding.chatList.closeMenu()
             }
 
             override fun onDelete(id: Long) {

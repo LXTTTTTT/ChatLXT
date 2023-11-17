@@ -89,12 +89,14 @@ class SingleMessageAdapter(context: Context,list: List<Message>,prologue: String
                     receiveMessageHolder.viewBinding.time.text = DataUtil.stamp2Date(message.createTime)
                     receiveMessageHolder.viewBinding.time.visibility = if(showTime) View.VISIBLE else View.GONE
                     when(message.status){
+                        // 成功
                         Constant.MESSAGE_SEND -> {
                             receiveMessageHolder.viewBinding.content.text = Constant.THINKING
                             receiveMessageHolder.viewBinding.content.setTextColor(ContextCompat.getColor(my_context, R.color.blue_1))
                             receiveMessageHolder.viewBinding.loading.visibility = View.VISIBLE
                             receiveMessageHolder.viewBinding.fail.visibility = View.GONE
                         }
+                        // 失败
                         Constant.MESSAGE_FAIL -> {
                             receiveMessageHolder.viewBinding.content.text = Constant.FAIL
                             receiveMessageHolder.viewBinding.content.setTextColor(ContextCompat.getColor(my_context, R.color.blue_1))
@@ -102,6 +104,16 @@ class SingleMessageAdapter(context: Context,list: List<Message>,prologue: String
                             receiveMessageHolder.viewBinding.fail.visibility = View.VISIBLE
                             receiveMessageHolder.viewBinding.fail.setOnClickListener {
                                 listener?.onReSend(message)  // 把它传出去
+                            }
+                        }
+                        // 取消
+                        Constant.MESSAGE_CANCEL -> {
+                            receiveMessageHolder.viewBinding.content.text = Constant.CANCEL
+                            receiveMessageHolder.viewBinding.content.setTextColor(ContextCompat.getColor(my_context, R.color.blue_1))
+                            receiveMessageHolder.viewBinding.loading.visibility = View.GONE
+                            receiveMessageHolder.viewBinding.fail.visibility = View.VISIBLE
+                            receiveMessageHolder.viewBinding.fail.setOnClickListener {
+                                listener?.onReSend(message)
                             }
                         }
                         else -> {

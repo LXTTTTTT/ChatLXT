@@ -94,8 +94,6 @@ public class MainApplication extends Application {
         DaoUtil.getInstance().init(this);
         // 初始化 SharedPreferences 工具
         SharedPreferencesUtil.getInstance().initContext(this);
-        // 初始化 Retrofit 网络请求工具
-        RetrofitUtil.INSTANCE.init();
         // 设置这个程序中的每个 activity 的生命周期事件（暂不操作）
         registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
             @Override public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle bundle) {
@@ -113,8 +111,7 @@ public class MainApplication extends Application {
         // 初始化全局使用 ViewModel
         init_ViewModel();
         // 初始化请求工具
-        gptInterface = RetrofitUtil.INSTANCE.getRetrofit().create(GPTInterface.class);
-        RequestUtil.getInstance().init(gptInterface);
+        init_request();
 
         // 初始化线程池
         threadPool = Executors.newCachedThreadPool();  // 执行大量不耗时的任务用这个
@@ -130,6 +127,13 @@ public class MainApplication extends Application {
 
         layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
+    }
+
+    public void init_request(){
+        // 初始化 Retrofit 网络请求工具
+        RetrofitUtil.INSTANCE.init();
+        gptInterface = RetrofitUtil.INSTANCE.getRetrofit().create(GPTInterface.class);
+        RequestUtil.getInstance().init(gptInterface);
     }
 
 // 控件操作 ---------------------------------------------------------------------

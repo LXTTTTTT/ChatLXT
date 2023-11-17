@@ -26,10 +26,12 @@ import com.example.chatlxt.Utils.DaoUtil;
 import com.example.chatlxt.Utils.NotificationCenter;
 import com.example.chatlxt.Utils.RequestUtil;
 import com.example.chatlxt.databinding.ActivityChatBinding;
+import com.example.lxt.Utils.RetrofitUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class ChatActivity extends BaseActivity implements NotificationCenter.NotificationCenterDelegate{
 
@@ -99,7 +101,9 @@ public class ChatActivity extends BaseActivity implements NotificationCenter.Not
     }
 
     @Override
-    protected void initData() {}
+    protected void initData() {
+
+    }
 
     private void init_adapter() {
         prologue = prologue.replaceAll("\n","");
@@ -116,6 +120,7 @@ public class ChatActivity extends BaseActivity implements NotificationCenter.Not
                 loge("答案id：" + message.getId() + " / 问题数量：" + messages.size() + " / 问题id：" + (question != null ? question.getId() : "null") + " / 问题内容：" + (question != null ? question.getContent() : "null"));
                 if(question!=null){
                     Variable.lastestReceive = message;
+                    Variable.lastestSend = question;
                     askQuestion(question.getId());
                 }
             }
@@ -258,6 +263,7 @@ public class ChatActivity extends BaseActivity implements NotificationCenter.Not
 
     @Override
     protected void onDestroy() {
+        if(Variable.lastestSend!=null && Variable.lastestSend.belong == chatID){RequestUtil.getInstance().cancelRequest();} // 取消请求
         super.onDestroy();
     }
 

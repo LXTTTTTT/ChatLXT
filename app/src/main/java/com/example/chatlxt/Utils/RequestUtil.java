@@ -52,6 +52,12 @@ public class RequestUtil {
             if (disposable != null && !disposable.isDisposed()) {
                 // 取消发送请求
                 disposable.dispose();
+                Variable.isAsking = false;
+                if(result.status==Constant.MESSAGE_SEND){
+                    result.status = Constant.MESSAGE_CANCEL;
+                    DaoUtil.getInstance().getDaoSession().update(result);
+                    Variable.lastestReceive=null;  // 初始化
+                }
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -126,6 +132,7 @@ public class RequestUtil {
                         public void onComplete() {
                             Log.e(TAG, "onComplete: " );
                         }
+
                     });
         }catch (Exception e){
             e.printStackTrace();

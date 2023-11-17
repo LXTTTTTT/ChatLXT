@@ -18,14 +18,17 @@ import com.example.chatlxt.Utils.DaoUtil;
 import com.example.chatlxt.View.BottomBar;
 import com.example.chatlxt.databinding.ActivityMainBinding;
 import com.example.chatlxt.databinding.FragmentSingleBinding;
+import com.example.lxt.Utils.RetrofitUtil;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends BaseActivity {
 
-    ActivityMainBinding viewBinding;
-    SingleSessionFragment singleSessionFragment;
-    KeepSessionFragment keepSessionFragment;
+    private ActivityMainBinding viewBinding;
+    private SingleSessionFragment singleSessionFragment;
+    private KeepSessionFragment keepSessionFragment;
+    private Chat singleChat;
 
     @Override
     protected Object setLayout() {
@@ -43,12 +46,12 @@ public class MainActivity extends BaseActivity {
         // 如果没有单次聊天数据库就创建
         List<Chat> chats = DaoUtil.getChatBuilder().where(ChatDao.Properties.Id.eq(0)).list();
         if(chats==null || chats.isEmpty()){
-            Chat singleChat = new Chat();
-            singleChat.setId(0L);
-            DaoUtil.getInstance().getDaoSession().insertOrReplace(singleChat);
-            Variable.nowChat = singleChat;
+            Chat chat = new Chat();
+            chat.setId(0L);
+            DaoUtil.getInstance().getDaoSession().insertOrReplace(chat);
+            singleChat = chat;
         }else {
-            Variable.nowChat = chats.get(0);
+            singleChat = chats.get(0);
             loge("单次会话 id:"+chats.get(0).getId());
         }
         init_fragment();
@@ -73,6 +76,12 @@ public class MainActivity extends BaseActivity {
                 application.hideKeyboard();
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        Variable.nowChat = singleChat;
+        super.onResume();
     }
 
     private long backPressedTime = 0;
