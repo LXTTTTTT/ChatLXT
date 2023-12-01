@@ -83,19 +83,19 @@ public class Constant {
     public static final int KEY_MAX_INPUT_SIZE =20 * 1024;
 
 // 请求用到的 URL ----------------------------------------------------
-    public static final String WEBSOCKET_ADDR = "wss://back.monitor.beidou.online/ws";
-//    public static final String BASE_URL = Variable.DebugMode? "http://back.tdwtv2.pg8.ink":"https://back.monitor.beidou.online";
+    public static final String WEBSOCKET_ADDR = "";
+//    public static final String BASE_URL = Variable.DebugMode? "":"";
     public static final String BASE_URL = "https://api.openai.com";
     public static final String GPT_CHAT = "/v1/chat/completions";
 
 // ChatGPT ---------------------------------------------------------------
-    public static final String GPT_KEY = "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";
     public static final String GPT_USER = "user";
     public static final String GPT_ASSISTANT = "assistant";
     public static final String GPT_SYSTEM = "system";
     public static final String THINKING = "正在思考中... ";
     public static final String FAIL = "发送失败，点击小图标重新发送";
     public static final String CANCEL = "已取消发送，点击小图标重新发送";
+    public static final String GPT_KEY = "gpt_key";  // gpt key
 
     public static final int MESSAGE_SEND = 0;
     public static final int MESSAGE_SUCCESS = 1;

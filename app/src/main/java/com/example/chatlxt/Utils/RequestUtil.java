@@ -76,9 +76,14 @@ public class RequestUtil {
 
     public void chat(List<Message> chatList){
         try{
+            String key = Variable.getGPTKey();
+            if(key.isEmpty()){
+                MainApplication.getInstance().showToast("请先设置key",0);
+                return;
+            }
             GPTRequest gptRequest = new GPTRequest();
             gptRequest.messages = chatList;
-            request.chat("Bearer "+ Constant.GPT_KEY,gptRequest)
+            request.chat("Bearer "+ key ,gptRequest)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new io.reactivex.Observer<GPTResponse>() {

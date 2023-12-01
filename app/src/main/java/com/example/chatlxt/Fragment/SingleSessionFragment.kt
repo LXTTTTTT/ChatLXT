@@ -14,7 +14,9 @@ import com.example.chatlxt.Global.Variable
 import com.example.chatlxt.Utils.DaoUtil
 import com.example.chatlxt.Utils.NotificationCenter
 import com.example.chatlxt.Utils.RequestUtil
+import com.example.chatlxt.Utils.SharedPreferencesUtil
 import com.example.chatlxt.View.CustomDialog
+import com.example.chatlxt.View.InputDialog
 import com.example.chatlxt.databinding.FragmentSingleBinding
 
 class SingleSessionFragment: BaseFragment(),NotificationCenter.NotificationCenterDelegate {
@@ -123,7 +125,16 @@ class SingleSessionFragment: BaseFragment(),NotificationCenter.NotificationCente
                     }
                 },object :OnClickListener{
                     override fun onClick(p0: View?) {
+                        // 设置 key
                         application.hidePopupMenu()
+                        application.showInputDialog(activity,object :InputDialog.onInputDialogWork{
+                            override fun onYes(key: String?) {
+                                key?.let {
+                                    SharedPreferencesUtil.getInstance().setString(Constant.GPT_KEY,key)
+                                    application.showToast("设置成功",0)
+                                }
+                            }
+                        })
                     }
                 })
             }

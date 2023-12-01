@@ -33,6 +33,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.chatlxt.R;
 import com.example.chatlxt.View.CustomDialog;
+import com.example.chatlxt.View.InputDialog;
 import com.example.chatlxt.View.WarnDialog;
 import com.example.chatlxt.ViewModel.DataViewModel;
 import com.example.chatlxt.Global.Variable;
@@ -63,6 +64,7 @@ public class MainApplication extends Application {
     public PopupWindow popupWindow2;
     private CustomDialog customDialog;  // 角色扮演弹窗
     private WarnDialog warnDialog;  // 警告 dialog
+    private InputDialog inputDialog;  // 输入 dialog
 
 // ViewModel ------------------------------
 //    public TextViewModel textViewModel;
@@ -298,6 +300,28 @@ public class MainApplication extends Application {
         }
     }
 
+    public void showInputDialog(Activity target_activity, InputDialog.onInputDialogWork onInputDialogWork) {
+        if (inputDialog == null) {
+            inputDialog = new InputDialog();
+        }
+        if (inputDialog.isAdded()) return;
+        Log.e(TAG, "弹出 InputDialog");
+        // 设置警告的 内容 和 点击确定事件
+        if(target_activity != null){
+            inputDialog.setData(onInputDialogWork);
+            inputDialog.show(target_activity.getFragmentManager(), "");
+        } else {
+            inputDialog.setData(onInputDialogWork);
+            inputDialog.show(now_activity.getFragmentManager(), "");
+        }
+    }
+
+    public void hideInputDialog() {
+        if (inputDialog != null) {
+            inputDialog.dismiss();
+        }
+    }
+
 
 // 其它操作 -------------------------------------------------------------------
 
@@ -375,10 +399,11 @@ public class MainApplication extends Application {
     public void showKeyboard(final View view) {
         view.postDelayed(() -> {
             if (null != inputMethodManager) {
+                Log.e(TAG, "showKeyboard: " );
                 view.requestFocus();
-                inputMethodManager.showSoftInput(view, 0);
+                inputMethodManager.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
             }
-        }, 50);
+        }, 100);
     }
 
     // 隐藏键盘
